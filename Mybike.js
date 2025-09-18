@@ -19,11 +19,7 @@
             pupilaDer.setAttribute('cy', 110);
         }
     });
-gfdgfdfgd
-
-function hola(){
-    console.log("hola mundo");
-}   
+// ...existing code...
 // Utilidades para manejo de usuarios en localStorage
 function getUsers() {
     const users = localStorage.getItem('users');
@@ -198,6 +194,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
-function hola2(){
-    console.log("hola mundo 2");
-}
+// ...existing code...
