@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login y Registro</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="Mybike.css">
+</head>
+<body>
+	<div class="container" id="login-container">
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+		<h2 style="
+			color: #0a2342;
+			font-size: 2.3rem;
+			font-family: 'Quicksand', 'Montserrat', 'Segoe UI', Arial, sans-serif;
+			font-weight: 700;
+			letter-spacing: 2px;
+			text-shadow: 0 2px 0 #eaf6ff, 0 4px 12px #3a6ea5;
+			margin-bottom: 18px;
+		">Iniciar Sesión</h2>
+		<div style="text-align:center; margin-bottom:20px;">
+			<div style="position:relative; display:inline-block; width:200px; height:200px;">
+				<img src="ciclista.png.jpg" alt="Ciclista" style="width:200px; height:200px; object-fit:contain; border-radius:50%; border:2px solid #007bff; background:#eaf6ff;">
+				<svg id="ojos-svg" width="200" height="200" style="position:absolute; top:0; left:0; pointer-events:none;">
+					<!-- Cejas curvas -->
+					<path id="ceja-izq" d="M60 98 Q75 88 90 98" stroke="#222" stroke-width="4" fill="none" />
+					<path id="ceja-der" d="M110 98 Q125 88 140 98" stroke="#222" stroke-width="4" fill="none" />
+					<circle id="ojo-izq" cx="75" cy="110" r="10" fill="#fff" stroke="#222" stroke-width="1.5" />
+					<circle id="pupila-izq" cx="75" cy="110" r="4" fill="#222" />
+					<circle id="ojo-der" cx="125" cy="110" r="10" fill="#fff" stroke="#222" stroke-width="1.5" />
+					<circle id="pupila-der" cx="125" cy="110" r="4" fill="#222" />
+					<!-- Ojos cerrados ocultos -->
+					<g id="ojos-cerrados" style="display:none;">
+						<path id="ojo-cerrado-izq" d="M65 110 Q75 115 85 110" stroke="#222" stroke-width="3" fill="none" />
+						<path id="ojo-cerrado-der" d="M115 110 Q125 115 135 110" stroke="#222" stroke-width="3" fill="none" />
+					</g>
+					<!-- Boca cerrada por defecto -->
+					<g id="boca-cerrada">
+						<!-- Boca cerrada menos seria, curva suave -->
+						<path d="M88 143 Q100 148 112 143" stroke="#222" stroke-width="4" fill="none" />
+					</g>
+					<!-- Boca sonriente oculta -->
+					<g id="boca-sonrisa" style="display:none;">
+						<path d="M87 140 Q100 160 113 140" stroke="#222" stroke-width="4" fill="none" />
+				    
+					</g>
+				</svg>
+			</div>
+		</div>
+		<div id="login-error" class="error" style="display:none;"></div>
+		<div class="form-group">
+			<label for="login-username">Usuario</label>
+			<input type="text" id="login-username" autocomplete="username">
+		</div>
+		<div class="form-group">
+			<label for="login-password">Contraseña</label>
+			<input type="password" id="login-password" autocomplete="current-password">
+		</div>
+	<button id="login-btn">Entrar</button>
+	<span class="toggle-link" id="show-register">¿No tienes cuenta? Regístrate</span>
+	<span class="toggle-link" id="show-recover">¿Olvidaste tu contraseña?</span>
+	</div>
+	<div class="container" id="recover-container" style="display:none;">
+		<h2>Recuperar Contraseña</h2>
+		<div id="recover-error" class="error" style="display:none;"></div>
+		<div id="recover-success" class="success" style="display:none;"></div>
+		<div class="form-group">
+			<label for="recover-username">Usuario</label>
+			<input type="text" id="recover-username" autocomplete="username">
+		</div>
+		<button id="recover-btn">Recuperar</button>
+		<span class="toggle-link" id="back-login">Volver a iniciar sesión</span>
+	</div>
+	<div class="container" id="register-container" style="display:none;">
+		<h2>Registro</h2>
+		<div id="register-error" class="error" style="display:none;"></div>
+		<div id="register-success" class="success" style="display:none;"></div>
+		<div class="form-group">
+			<label for="register-username">Usuario</label>
+			<input type="text" id="register-username" autocomplete="username">
+		</div>
+		<div class="form-group">
+			<label for="register-password">Contraseña</label>
+			<input type="password" id="register-password" autocomplete="new-password">
+		</div>
+		<button id="register-btn">Registrar</button>
+		<span class="toggle-link" id="show-login">¿Ya tienes cuenta? Inicia sesión</span>
+	</div>
+	<div class="container" id="welcome-container" style="display:none;">
+		<div class="welcome">
+			<h2>Bienvenido, <span id="welcome-user"></span>!</h2>
+			<button id="logout-btn">Cerrar sesión</button>
+		</div>
+	</div>
+	<script src="Mybike.js"></script>
+	<script>
+	// Animación de ojos que siguen el ratón
+	var ojoIzq = document.getElementById('ojo-izq');
+	var pupilaIzq = document.getElementById('pupila-izq');
+	var ojoDer = document.getElementById('ojo-der');
+	var pupilaDer = document.getElementById('pupila-der');
+	var ojosCerrados = document.getElementById('ojos-cerrados');
+	var passwordInput = document.getElementById('login-password');
+	passwordInput.addEventListener('input', function() {
+		if (passwordInput.value.length > 0) {
+			ojoIzq.style.display = 'none';
+			pupilaIzq.style.display = 'none';
+			ojoDer.style.display = 'none';
+			pupilaDer.style.display = 'none';
+			ojosCerrados.style.display = 'inline';
+		} else {
+			ojoIzq.style.display = 'inline';
+			pupilaIzq.style.display = 'inline';
+			ojoDer.style.display = 'inline';
+			pupilaDer.style.display = 'inline';
+			ojosCerrados.style.display = 'none';
+		}
+	});
+	var bocaCerrada = document.getElementById('boca-cerrada');
+	var bocaSonrisa = document.getElementById('boca-sonrisa');
+	function moverPupilas(e) {
+		const rect = document.getElementById('ojos-svg').getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		// Ojo izquierdo
+		moverPupila(pupilaIzq, 75, 110, x, y);
+		// Ojo derecho
+		moverPupila(pupilaDer, 125, 110, x, y);
+	}
+	function moverPupila(pupila, cx, cy, mx, my) {
+		let dx = mx - cx;
+		let dy = my - cy;
+		const max = 5;
+		const dist = Math.sqrt(dx*dx + dy*dy);
+		if (dist > max) {
+			dx = dx * max / dist;
+			dy = dy * max / dist;
+		}
+		if (isNaN(mx) || isNaN(my)) {
+			dx = 0;
+			dy = 0;
+		}
+		pupila.setAttribute('cx', cx + dx);
+		pupila.setAttribute('cy', cy + dy);
+	}
+	document.getElementById('ojos-svg').addEventListener('mousemove', moverPupilas);
+	document.getElementById('ojos-svg').addEventListener('mouseleave', () => {
+		pupilaIzq.setAttribute('cx', 75);
+		pupilaIzq.setAttribute('cy', 110);
+		pupilaDer.setAttribute('cx', 125);
+		pupilaDer.setAttribute('cy', 110);
+	});
+	var pupilasCentradas = false;
+	document.querySelector('#login-container').addEventListener('mouseenter', function() {
+		pupilaIzq.setAttribute('cx', 75);
+		pupilaIzq.setAttribute('cy', 110);
+		pupilaDer.setAttribute('cx', 125);
+		pupilaDer.setAttribute('cy', 110);
+		pupilasCentradas = true;
+	});
+	document.querySelector('#login-container').addEventListener('mousemove', function(e) {
+		if (pupilasCentradas) {
+			pupilasCentradas = false;
+			pupilaIzq.setAttribute('cx', 75);
+			pupilaIzq.setAttribute('cy', 110);
+			pupilaDer.setAttribute('cx', 125);
+			pupilaDer.setAttribute('cy', 110);
+		}
+		const rect = document.getElementById('ojos-svg').getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		moverPupila(pupilaIzq, 75, 110, x, y);
+		moverPupila(pupilaDer, 125, 110, x, y);
+	});
+	document.querySelector('#login-container').addEventListener('mouseleave', function() {
+		pupilaIzq.setAttribute('cx', 75);
+		pupilaIzq.setAttribute('cy', 110);
+		pupilaDer.setAttribute('cx', 125);
+		pupilaDer.setAttribute('cy', 110);
+	});
+	// Boca: mostrar sonrisa al escribir usuario
+	const usuarioInput = document.getElementById('login-username');
+	var cejaIzq = document.getElementById('ceja-izq');
+	var cejaDer = document.getElementById('ceja-der');
+	usuarioInput.addEventListener('input', function() {
+		if (usuarioInput.value.length > 0) {
+			bocaCerrada.style.display = 'none';
+			bocaSonrisa.style.display = 'inline';
+			// Levantar y curvar cejas
+			cejaIzq.setAttribute('d', 'M60 92 Q75 80 90 92');
+			cejaDer.setAttribute('d', 'M110 92 Q125 80 140 92');
+		} else {
+			bocaCerrada.style.display = 'inline';
+			bocaSonrisa.style.display = 'none';
+			// Volver cejas a posición normal
+			cejaIzq.setAttribute('d', 'M60 98 Q75 88 90 98');
+			cejaDer.setAttribute('d', 'M110 98 Q125 88 140 98');
+		}
+	});
+	// Inicialmente boca cerrada
+	bocaCerrada.style.display = 'inline';
+	bocaSonrisa.style.display = 'none';
+	</script>
+	<script>
+	// Animación de ojos que siguen el ratón
+	const ojoIzq = document.getElementById('ojo-izq');
+	const pupilaIzq = document.getElementById('pupila-izq');
+	const ojoDer = document.getElementById('ojo-der');
+	const pupilaDer = document.getElementById('pupila-der');
+	function moverPupilas(e) {
+		const rect = document.getElementById('ojos-svg').getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		// Ojo izquierdo
+		moverPupila(pupilaIzq, 75, 100, x, y);
+		// Ojo derecho
+		moverPupila(pupilaDer, 125, 100, x, y);
+	}
+	function moverPupila(pupila, cx, cy, mx, my) {
+		// Vector dirección
+		let dx = mx - cx;
+		let dy = my - cy;
+		// Limitar movimiento máximo
+		const max = 5;
+		const dist = Math.sqrt(dx*dx + dy*dy);
+		if (dist > max) {
+			dx = dx * max / dist;
+			dy = dy * max / dist;
+		}
+		// Si el ratón está lejos del SVG, mantener centrado
+		if (isNaN(mx) || isNaN(my)) {
+			dx = 0;
+			dy = 0;
+		}
+		pupila.setAttribute('cx', cx + dx);
+		pupila.setAttribute('cy', cy + dy);
+	}
+	document.getElementById('ojos-svg').addEventListener('mousemove', moverPupilas);
+	document.getElementById('ojos-svg').addEventListener('mouseleave', () => {
+		pupilaIzq.setAttribute('cx', 75);
+		pupilaIzq.setAttribute('cy', 110);
+		pupilaDer.setAttribute('cx', 125);
+		pupilaDer.setAttribute('cy', 110);
+	});
+	// También seguir el ratón en todo el recuadro
+	let pupilasCentradas = false;
+	document.querySelector('#login-container').addEventListener('mouseenter', function() {
+		pupilaIzq.setAttribute('cx', 75);
+		pupilaIzq.setAttribute('cy', 110);
+		pupilaDer.setAttribute('cx', 125);
+		pupilaDer.setAttribute('cy', 110);
+		pupilasCentradas = true;
+	});
+	document.querySelector('#login-container').addEventListener('mousemove', function(e) {
+		if (pupilasCentradas) {
+			pupilasCentradas = false;
+			pupilaIzq.setAttribute('cx', 75);
+			pupilaIzq.setAttribute('cy', 110);
+			pupilaDer.setAttribute('cx', 125);
+			pupilaDer.setAttribute('cy', 110);
+		}
+		const rect = document.getElementById('ojos-svg').getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		moverPupila(pupilaIzq, 75, 110, x, y);
+		moverPupila(pupilaDer, 125, 110, x, y);
+	});
+	document.querySelector('#login-container').addEventListener('mouseleave', function() {
+		pupilaIzq.setAttribute('cx', 75);
+		pupilaIzq.setAttribute('cy', 110);
+		pupilaDer.setAttribute('cx', 125);
+		pupilaDer.setAttribute('cy', 110);
+	});
+	</script>
+</body>
+</html>
