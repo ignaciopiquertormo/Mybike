@@ -134,28 +134,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     registerBtn.addEventListener('click', () => {
         const username = document.getElementById('register-username').value.trim();
+        const email = document.getElementById('register-email').value.trim();
         const password = document.getElementById('register-password').value;
-        if (!username || !password) {
+        const password2 = document.getElementById('register-password2').value;
+        if (!username || !email || !password || !password2) {
             registerError.textContent = 'Completa todos los campos.';
             registerError.style.display = 'block';
             registerSuccess.style.display = 'none';
             return;
         }
-        if (username.length < 3 || password.length < 4) {
-            registerError.textContent = 'Usuario mínimo 3 caracteres, contraseña mínimo 4.';
+        if (username.length < 3) {
+            registerError.textContent = 'Usuario mínimo 3 caracteres.';
             registerError.style.display = 'block';
             registerSuccess.style.display = 'none';
             return;
         }
-        if (saveUser(username, password)) {
-            registerError.style.display = 'none';
-            registerSuccess.textContent = '¡Usuario registrado! Ahora puedes iniciar sesión.';
-            registerSuccess.style.display = 'block';
-        } else {
-            registerError.textContent = 'El usuario ya existe.';
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+            registerError.textContent = 'Correo electrónico no válido.';
             registerError.style.display = 'block';
             registerSuccess.style.display = 'none';
+            return;
         }
+        if (password.length < 4) {
+            registerError.textContent = 'Contraseña mínimo 4 caracteres.';
+            registerError.style.display = 'block';
+            registerSuccess.style.display = 'none';
+            return;
+        }
+        if (password !== password2) {
+            registerError.textContent = 'Las contraseñas no coinciden.';
+            registerError.style.display = 'block';
+            registerSuccess.style.display = 'none';
+            return;
+        }
+        const users = getUsers();
+        if (users.find(u => u.username === username)) {
+            registerError.textContent = 'El nombre de usuario ya existe.';
+            registerError.style.display = 'block';
+            registerSuccess.style.display = 'none';
+            return;
+        }
+        users.push({ username, email, password });
+        localStorage.setItem('users', JSON.stringify(users));
+        registerError.style.display = 'none';
+        registerSuccess.textContent = '¡Usuario registrado! Ahora puedes iniciar sesión.';
+        registerSuccess.style.display = 'block';
     });
 
     recoverBtn.addEventListener('click', () => {
